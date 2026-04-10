@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube en Segundo Plano</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding-top: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]::placeholder {
+            color: #888;
+        }
+
+        input[type="text"]:focus {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.5);
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .player-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 16px;
+            background: #000;
+            display: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .player-container.active {
+            display: block;
+        }
+
+        .player-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .tips {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid #feca57;
+        }
+
+        .tips h3 {
+            color: #feca57;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .tips ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .tips li {
+            padding: 8px 0;
+            color: #ccc;
+            font-size: 0.9rem;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .tips li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #ff6b6b;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            margin-top: 20px;
+            color: #aaa;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ff6b6b;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .audio-mode {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .audio-mode label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .audio-mode input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube en Segundo Plano</h1>
+        <p class="subtitle">Reproduce música de YouTube con la pantalla apagada</p>
+
+        <div class="input-group">
+            <input 
+                type="text" 
+                id="youtubeUrl" 
+                placeholder="Pega el link de YouTube aquí..."
+                autocomplete="off"
+            >
+            <button onclick="loadVideo()">Reproducir</button>
+        </div>
+
+        <div class="audio-mode">
+            <label>
+                <input type="checkbox" id="audioOnly" checked>
+                Modo solo audio (recomendado para música)
+            </label>
+        </div>
+
+        <div class="loading" id="loading">
+            <span class="spinner"></span>Cargando video...
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="player-container" id="playerContainer">
+            <iframe 
+                id="youtubePlayer"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                playsinline
+            ></iframe>
+        </div>
+
+        <div class="tips">
+            <h3>Cómo usar en móvil:</h3>
+            <ul>
+                <li>Pega el link de YouTube y presiona "Reproducir"</li>
+                <li>El video comenzará automáticamente</li>
+                <li>Bloquea la pantalla o cambia de app</li>
+                <li>El audio seguirá reproduciéndose</li>
+                <li>Usa los controles de notificación para pausar/play</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function extractVideoId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+                /^([a-zA-Z0-9_-]{11})$/
+            ];
+
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) return match[1];
+            }
+            return null;
+        }
+
+        function loadVideo() {
+            const urlInput = document.getElementById('youtubeUrl');
+            const videoId = extractVideoId(urlInput.value.trim());
+            const errorDiv = document.getElementById('error');
+            const loadingDiv = document.getElementById('loading');
+            const playerContainer = document.getElementById('playerContainer');
+            const player = document.getElementById('youtubePlayer');
+            const audioOnly = document.getElementById('audioOnly').checked;
+
+            // Reset
+            errorDiv.classList.remove('active');
+            errorDiv.textContent = '';
+
+            if (!videoId) {
+                errorDiv.textContent = 'Por favor, ingresa un link de YouTube válido';
+                errorDiv.classList.add('active');
+                return;
+            }
+
+            loadingDiv.classList.add('active');
+
+            // Construir URL del embed con parámetros optimizados
+            let embedUrl = `https://www.youtube.com/embed/${videoId}?`;
+            const params = new URLSearchParams({
+                autoplay: '1',
+                rel: '0',
+                modestbranding: '1',
+                playsinline: '1',
+                enablejsapi: '1'
+            });
+
+            if (audioOnly) {
+                // Ocultar el video visualmente pero mantener el audio
+                params.set('controls', '0');
+            }
+
+            embedUrl += params.toString();
+
+            player.src = embedUrl;
+            playerContainer.classList.add('active');
+            loadingDiv.classList.remove('active');
+
+            // Scroll al reproductor
+            playerContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Permitir Enter para enviar
+        document.getElementById('youtubeUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loadVideo();
+            }
+        });
+
+        // Auto-detectar URL del portapapeles al cargar
+        window.addEventListener('load', async function() {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text && extractVideoId(text)) {
+                    document.getElementById('youtubeUrl').value = text;
+                }
+            } catch (e) {
+                // Silenciar error de permisos
+            }
+        });
+    </script>
+</body>
+</html>
