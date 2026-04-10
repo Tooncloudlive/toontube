@@ -2,93 +2,367 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube en Segundo Plano</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>YouTube Audio</title>
     <style>
+        /* ========================================
+           VARIABLES Y RESET
+           ======================================== */
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: #1c1c1e;
+            --bg-tertiary: #2c2c2e;
+            --glass-bg: rgba(28, 28, 30, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.38);
+            --accent-red: #ff3b30;
+            --accent-blue: #007aff;
+            --accent-green: #34c759;
+            --accent-orange: #ff9500;
+            --accent-purple: #af52de;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.12);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.32);
+            --radius-sm: 12px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
+        /* ========================================
+           TIPOGRAFÍA SAN FRANCISCO
+           ======================================== */
+        @font-face {
+            font-family: 'SF Pro Display';
+            src: local('-apple-system'), local('BlinkMacSystemFont');
+            font-weight: 400;
+        }
+
+        html {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========================================
+           BACKGROUND CON GRADIENTES SUAVES
+           ======================================== */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
-            color: #fff;
-            padding: 20px;
+            min-height: 100dvh;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 119, 198, 0.3), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0, 122, 255, 0.15), transparent),
+                radial-gradient(ellipse 50% 30% at 20% 100%, rgba(175, 82, 222, 0.1), transparent),
+                linear-gradient(180deg, #0d0d0f 0%, #000000 100%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            padding: 0;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 600px;
+        /* ========================================
+           CONTENEDOR PRINCIPAL
+           ======================================== */
+        .app-container {
+            max-width: 430px;
             margin: 0 auto;
-            padding-top: 30px;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 1.8rem;
-            background: linear-gradient(90deg, #ff6b6b, #feca57);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #aaa;
-            margin-bottom: 30px;
-            font-size: 0.9rem;
-        }
-
-        .input-group {
+            min-height: 100vh;
+            padding: 20px;
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            flex-direction: column;
         }
 
-        input[type="text"] {
-            flex: 1;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            font-size: 1rem;
+        /* ========================================
+           HEADER CON GLASSMORPHISM
+           ======================================== */
+        .header {
+            text-align: center;
+            padding: 24px 0 32px;
+        }
+
+        .header-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--accent-red) 0%, #ff6b6b 100%);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 8px 32px rgba(255, 59, 48, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .header-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* ========================================
+           TARJETAS (CARDS) CON GLASSMORPHISM
+           ======================================== */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.01);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ========================================
+           INPUT ESTILO iOS
+           ======================================== */
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px 52px 16px 16px;
+            background: rgba(44, 44, 46, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 400;
             outline: none;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
-        input[type="text"]::placeholder {
-            color: #888;
+        .input-field::placeholder {
+            color: var(--text-tertiary);
         }
 
-        input[type="text"]:focus {
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.5);
+        .input-field:focus {
+            background: rgba(44, 44, 46, 0.8);
+            border-color: rgba(255, 255, 255, 0.12);
         }
 
-        button {
-            padding: 15px 25px;
+        .input-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+        }
+
+        /* ========================================
+           BOTONES ESTILO iOS
+           ======================================== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
             border: none;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
-            color: #fff;
-            font-size: 1rem;
+            border-radius: var(--radius-full);
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
+            transition: all 0.2s ease;
+            outline: none;
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-red) 0%, #ff5a52 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(255, 59, 48, 0.35);
         }
 
-        button:active {
-            transform: translateY(0);
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 24px rgba(255, 59, 48, 0.45);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ========================================
+           TOGGLE SWITCH ESTILO iOS
+           ======================================== */
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 0;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toggle-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent-blue), #5ac8fa);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+
+        .toggle-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .toggle-subtext {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* Switch iOS */
+        .switch {
+            position: relative;
+            width: 51px;
+            height: 31px;
+            cursor: pointer;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(120, 120, 128, 0.32);
+            border-radius: var(--radius-full);
+            transition: 0.25s ease;
+        }
+
+        .slider::before {
+            content: '';
+            position: absolute;
+            height: 27px;
+            width: 27px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.25s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        .switch input:checked + .slider {
+            background-color: var(--accent-green);
+        }
+
+        .switch input:checked + .slider::before {
+            transform: translateX(20px);
+        }
+
+        /* ========================================
+           REPRODUCTOR
+           ======================================== */
+        .player-card {
+            display: none;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .player-card.active {
+            display: block;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .player-container {
@@ -96,14 +370,7 @@
             padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
-            border-radius: 16px;
             background: #000;
-            display: none;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .player-container.active {
-            display: block;
         }
 
         .player-container iframe {
@@ -115,147 +382,343 @@
             border: none;
         }
 
-        .tips {
-            margin-top: 25px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border-left: 4px solid #feca57;
-        }
-
-        .tips h3 {
-            color: #feca57;
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
-
-        .tips ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .tips li {
-            padding: 8px 0;
-            color: #ccc;
-            font-size: 0.9rem;
-            padding-left: 25px;
-            position: relative;
-        }
-
-        .tips li::before {
-            content: "✓";
+        .player-overlay {
             position: absolute;
+            bottom: 0;
             left: 0;
-            color: #4ade80;
-            font-weight: bold;
+            right: 0;
+            padding: 16px 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .error {
-            color: #ff6b6b;
-            text-align: center;
-            margin-top: 15px;
+        .now-playing {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .now-playing-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-red), #ff6b6b);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .now-playing-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        .now-playing-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .now-playing-subtext {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* ========================================
+           LOADING Y ESTADOS
+           ======================================== */
+        .loading-state {
             display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
         }
 
-        .error.active {
-            display: block;
-        }
-
-        .loading {
-            text-align: center;
-            margin-top: 20px;
-            color: #aaa;
-            display: none;
-        }
-
-        .loading.active {
-            display: block;
+        .loading-state.active {
+            display: flex;
         }
 
         .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #ff6b6b;
+            width: 24px;
+            height: 24px;
+            border: 2.5px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--accent-red);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
-            margin-right: 10px;
-            vertical-align: middle;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        .audio-mode {
-            margin-top: 15px;
+        .loading-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        /* Error State */
+        .error-state {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: rgba(255, 59, 48, 0.12);
+            border-radius: var(--radius-md);
+            margin-top: 16px;
+        }
+
+        .error-state.active {
+            display: flex;
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .error-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .error-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+
+        .error-text {
+            font-size: 14px;
+            color: var(--accent-red);
+        }
+
+        /* ========================================
+           LISTA DE INSTRUCCIONES
+           ======================================== */
+        .tips-list {
+            list-style: none;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .tip-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .tip-item:first-child {
+            padding-top: 0;
+        }
+
+        .tip-number {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent-purple), #bf5af2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .tip-content {
+            flex: 1;
+            padding-top: 4px;
+        }
+
+        .tip-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .tip-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* ========================================
+           FOOTER
+           ======================================== */
+        .footer {
+            margin-top: auto;
+            padding-top: 24px;
             text-align: center;
         }
 
-        .audio-mode label {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            color: #ccc;
-            font-size: 0.9rem;
+        .footer-text {
+            font-size: 12px;
+            color: var(--text-tertiary);
         }
 
-        .audio-mode input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: #ff6b6b;
+        /* ========================================
+           ANIMACIONES ADICIONALES
+           ======================================== */
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Scrollbar estilo iOS */
+        ::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+        /* Selección de texto */
+        ::selection {
+            background: rgba(0, 122, 255, 0.3);
+            color: white;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>YouTube en Segundo Plano</h1>
-        <p class="subtitle">Reproduce música de YouTube con la pantalla apagada</p>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-icon">
+                <svg viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
+            </div>
+            <h1>YouTube Audio</h1>
+            <p>Música en segundo plano</p>
+        </header>
 
-        <div class="input-group">
-            <input 
-                type="text" 
-                id="youtubeUrl" 
-                placeholder="Pega el link de YouTube aquí..."
-                autocomplete="off"
-            >
-            <button onclick="loadVideo()">Reproducir</button>
+        <!-- Input Card -->
+        <div class="card">
+            <div class="card-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+                Enlace de YouTube
+            </div>
+            <div class="input-wrapper">
+                <input 
+                    type="text" 
+                    id="youtubeUrl" 
+                    class="input-field"
+                    placeholder="Pega el enlace aquí..."
+                    autocomplete="off"
+                >
+                <span class="input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                </span>
+            </div>
+            <button class="btn btn-primary" onclick="loadVideo()">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                Reproducir
+            </button>
         </div>
 
-        <div class="audio-mode">
-            <label>
-                <input type="checkbox" id="audioOnly" checked>
-                Modo solo audio (recomendado para música)
-            </label>
+        <!-- Modo Audio Toggle -->
+        <div class="card">
+            <div class="toggle-wrapper">
+                <div class="toggle-label">
+                    <div class="toggle-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/></svg>
+                    </div>
+                    <div>
+                        <div class="toggle-text">Modo solo audio</div>
+                        <div class="toggle-subtext">Optimizado para música</div>
+                    </div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="audioOnly" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
         </div>
 
-        <div class="loading" id="loading">
-            <span class="spinner"></span>Cargando video...
+        <!-- Loading State -->
+        <div class="loading-state" id="loading">
+            <div class="spinner"></div>
+            <span class="loading-text">Cargando...</span>
         </div>
 
-        <div class="error" id="error"></div>
-
-        <div class="player-container" id="playerContainer">
-            <iframe 
-                id="youtubePlayer"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen
-                playsinline
-            ></iframe>
+        <!-- Error State -->
+        <div class="error-state" id="error">
+            <div class="error-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            </div>
+            <span class="error-text" id="errorText"></span>
         </div>
 
-        <div class="tips">
-            <h3>Cómo usar en móvil:</h3>
-            <ul>
-                <li>Pega el link de YouTube y presiona "Reproducir"</li>
-                <li>El video comenzará automáticamente</li>
-                <li>Bloquea la pantalla o cambia de app</li>
-                <li>El audio seguirá reproduciéndose</li>
-                <li>Usa los controles de notificación para pausar/play</li>
+        <!-- Player -->
+        <div class="card player-card" id="playerCard">
+            <div class="player-container">
+                <iframe 
+                    id="youtubePlayer"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen
+                    playsinline
+                ></iframe>
+            </div>
+        </div>
+
+        <!-- Tips Card -->
+        <div class="card">
+            <div class="card-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                Cómo usar
+            </div>
+            <ul class="tips-list">
+                <li class="tip-item">
+                    <span class="tip-number">1</span>
+                    <div class="tip-content">
+                        <div class="tip-title">Pega el enlace</div>
+                        <div class="tip-desc">Copia y pega cualquier URL de YouTube</div>
+                    </div>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-number">2</span>
+                    <div class="tip-content">
+                        <div class="tip-title">Presiona reproducir</div>
+                        <div class="tip-desc">El audio comenzará automáticamente</div>
+                    </div>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-number">3</span>
+                    <div class="tip-content">
+                        <div class="tip-title">Bloquea la pantalla</div>
+                        <div class="tip-desc">El audio sigue en segundo plano</div>
+                    </div>
+                </li>
+                <li class="tip-item">
+                    <span class="tip-number">4</span>
+                    <div class="tip-content">
+                        <div class="tip-title">Controles de notificación</div>
+                        <div class="tip-desc">Pausa, play y siguiente desde el centro de control</div>
+                    </div>
+                </li>
             </ul>
         </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p class="footer-text">Diseñado para iOS</p>
+        </footer>
     </div>
 
     <script>
@@ -276,24 +739,25 @@
             const urlInput = document.getElementById('youtubeUrl');
             const videoId = extractVideoId(urlInput.value.trim());
             const errorDiv = document.getElementById('error');
+            const errorText = document.getElementById('errorText');
             const loadingDiv = document.getElementById('loading');
-            const playerContainer = document.getElementById('playerContainer');
+            const playerCard = document.getElementById('playerCard');
             const player = document.getElementById('youtubePlayer');
             const audioOnly = document.getElementById('audioOnly').checked;
 
-            // Reset
+            // Reset states
             errorDiv.classList.remove('active');
-            errorDiv.textContent = '';
+            playerCard.classList.remove('active');
 
             if (!videoId) {
-                errorDiv.textContent = 'Por favor, ingresa un link de YouTube válido';
+                errorText.textContent = 'Ingresa un enlace de YouTube válido';
                 errorDiv.classList.add('active');
                 return;
             }
 
             loadingDiv.classList.add('active');
 
-            // Construir URL del embed con parámetros optimizados
+            // Build embed URL
             let embedUrl = `https://www.youtube.com/embed/${videoId}?`;
             const params = new URLSearchParams({
                 autoplay: '1',
@@ -304,28 +768,29 @@
             });
 
             if (audioOnly) {
-                // Ocultar el video visualmente pero mantener el audio
                 params.set('controls', '0');
             }
 
             embedUrl += params.toString();
 
             player.src = embedUrl;
-            playerContainer.classList.add('active');
+            playerCard.classList.add('active');
             loadingDiv.classList.remove('active');
 
-            // Scroll al reproductor
-            playerContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Scroll to player
+            setTimeout(() => {
+                playerCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
         }
 
-        // Permitir Enter para enviar
+        // Enter key support
         document.getElementById('youtubeUrl').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 loadVideo();
             }
         });
 
-        // Auto-detectar URL del portapapeles al cargar
+        // Auto-paste from clipboard
         window.addEventListener('load', async function() {
             try {
                 const text = await navigator.clipboard.readText();
@@ -333,9 +798,12 @@
                     document.getElementById('youtubeUrl').value = text;
                 }
             } catch (e) {
-                // Silenciar error de permisos
+                // Silent fail on permission error
             }
         });
+
+        // Focus input on load
+        document.getElementById('youtubeUrl').focus();
     </script>
 </body>
 </html>
