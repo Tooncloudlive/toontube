@@ -1,145 +1,28 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<a-scene background="color:#000">
 
-<title>Mi Espacio VR</title>
-
-<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-
-<style>
-body{
-    margin:0;
-    overflow:hidden;
-    background:#000;
-}
-</style>
-</head>
-
-<body>
-
-<a-scene
-    background="color: #050505"
-    vr-mode-ui="enabled: true">
-
-    <!-- Assets -->
     <a-assets>
-        <a-asset-item
-            id="roomModel"
-            src="./14_6_2026.glb">
-        </a-asset-item>
-
-        <video
-            id="video1"
-            autoplay
-            loop
-            muted
-            playsinline
-            crossorigin="anonymous">
-        </video>
+        <a-asset-item id="room" src="14_6_2026.glb"></a-asset-item>
     </a-assets>
 
-    <!-- Luces -->
-    <a-light
-        type="ambient"
-        intensity="1.5">
-    </a-light>
+    <a-light type="ambient" intensity="2"></a-light>
 
-    <a-light
-        type="directional"
-        position="5 10 5"
-        intensity="1.2">
-    </a-light>
-
-    <!-- Modelo escaneado -->
     <a-entity
-        gltf-model="#roomModel"
+        gltf-model="#room"
         position="0 0 0"
-        rotation="0 0 0"
+        rotation="0 180 0"
         scale="1 1 1">
     </a-entity>
 
-    <!-- Pantalla Principal -->
-    <a-plane
-        position="0 2 -4"
-        width="4"
-        height="2.25"
-        color="#111"
-        material="metalness:0.2; roughness:0.8">
-    </a-plane>
-
-    <!-- Pantalla Izquierda -->
-    <a-plane
-        position="-3 2 -3"
-        rotation="0 25 0"
-        width="2.5"
-        height="1.4"
-        color="#181818">
-    </a-plane>
-
-    <!-- Pantalla Derecha -->
-    <a-plane
-        position="3 2 -3"
-        rotation="0 -25 0"
-        width="2.5"
-        height="1.4"
-        color="#181818">
-    </a-plane>
-
-    <!-- Marcos -->
-    <a-box
-        position="0 2 -4.05"
-        width="4.2"
-        height="2.45"
-        depth="0.05"
-        color="#222">
-    </a-box>
-
-    <a-box
-        position="-3 2 -3.05"
-        rotation="0 25 0"
-        width="2.7"
-        height="1.55"
-        depth="0.05"
-        color="#222">
-    </a-box>
-
-    <a-box
-        position="3 2 -3.05"
-        rotation="0 -25 0"
-        width="2.7"
-        height="1.55"
-        depth="0.05"
-        color="#222">
-    </a-box>
-
-    <!-- Piso auxiliar -->
-    <a-plane
-        rotation="-90 0 0"
-        width="100"
-        height="100"
-        color="#111">
-    </a-plane>
-
-    <!-- Cámara -->
-    <a-entity
-        id="rig"
-        position="0 1.7 0">
+    <a-entity position="0 0 0">
 
         <a-camera
-            wasd-controls="acceleration:25"
-            look-controls="pointerLockEnabled:true">
+            position="0 1.6 0"
+            wasd-controls="acceleration:20">
 
-            <a-cursor
-                color="#00FFFF">
-            </a-cursor>
+            <a-cursor></a-cursor>
 
         </a-camera>
 
     </a-entity>
 
 </a-scene>
-
-</body>
-</html>
