@@ -1,202 +1,44 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Mi Espacio VR - Cardboard Stereo</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VR Cardboard Forzado</title>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 <style>
-  html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #000;
-    touch-action: none;
-    -webkit-user-select: none;
-    user-select: none;
-  }
-  #overlay {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at center, rgba(20,20,20,.85), rgba(0,0,0,.96));
-    z-index: 10;
-    color: #fff;
-    font-family: Arial, Helvetica, sans-serif;
-    text-align: center;
-    padding: 24px;
-  }
-  #overlay .card {
-    max-width: 420px;
-    border: 1px solid rgba(255,255,255,.16);
-    border-radius: 18px;
-    padding: 24px 20px;
-    background: rgba(255,255,255,.04);
-    box-shadow: 0 12px 40px rgba(0,0,0,.45);
-  }
-  #overlay h1 {
-    font-size: 22px;
-    margin: 0 0 12px;
-  }
-  #overlay p {
-    font-size: 14px;
-    line-height: 1.5;
-    margin: 0 0 18px;
-    opacity: .92;
-  }
-  #startBtn {
-    appearance: none;
-    border: 0;
-    border-radius: 999px;
-    padding: 14px 22px;
-    background: #00d4ff;
-    color: #001018;
-    font-weight: 700;
-    font-size: 15px;
-  }
-  #hint {
-    margin-top: 12px;
-    font-size: 12px;
-    opacity: .75;
-  }
-  canvas {
-    display: block;
-  }
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;}
+#msg{
+position:fixed;top:10px;left:10px;z-index:999;
+background:rgba(0,0,0,.7);color:#fff;padding:8px 12px;
+font-family:Arial;border-radius:8px;
+}
 </style>
 </head>
 <body>
-  <div id="overlay">
-    <div class="card">
-      <h1>Modo estereoscópico para Cardboard</h1>
-      <p>
-        Toca para activar los sensores del teléfono y entrar en una vista
-        dividida lista para visor VR.
-      </p>
-      <button id="startBtn">Activar VR</button>
-      <div id="hint">Recomendado en horizontal, dentro del visor Cardboard.</div>
-    </div>
-  </div>
+<div id="msg">Modo Cardboard: coloca el teléfono en horizontal dentro del visor.</div>
 
-  <script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
-    import { DeviceOrientationControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/DeviceOrientationControls.js';
-    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
-    import { StereoEffect } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/effects/StereoEffect.js';
+<a-scene embedded vr-mode-ui="enabled:false" renderer="antialias:true">
+    <a-assets>
+        <a-asset-item id="room" src="./14_6_2026.glb"></a-asset-item>
+    </a-assets>
 
-    const overlay = document.getElementById('overlay');
-    const startBtn = document.getElementById('startBtn');
+    <a-light type="ambient" intensity="2.5"></a-light>
+    <a-light type="directional" intensity="2" position="5 10 5"></a-light>
 
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);
+    <a-entity gltf-model="#room" position="0 0 0" rotation="0 180 0"></a-entity>
 
-    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 1000);
-    camera.position.set(0, 0.9, 1.6);
+    <a-entity position="0 0.9 0">
+        <a-camera position="0 0 0" look-controls="touchEnabled:true"></a-camera>
+    </a-entity>
+</a-scene>
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.xr.enabled = false;
-    document.body.appendChild(renderer.domElement);
-
-    const effect = new StereoEffect(renderer);
-    effect.setSize(window.innerWidth, window.innerHeight);
-
-    // Luces
-    scene.add(new THREE.AmbientLight(0xffffff, 2.5));
-
-    const directional = new THREE.DirectionalLight(0xffffff, 2);
-    directional.position.set(5, 10, 5);
-    scene.add(directional);
-
-    // Modelo
-    const loader = new GLTFLoader();
-    loader.load(
-      './14_6_2026.glb',
-      (gltf) => {
-        const habitacion = gltf.scene;
-        habitacion.position.set(0, 0, 0);
-        habitacion.rotation.set(0, Math.PI, 0);
-        habitacion.scale.set(1, 1, 1);
-        scene.add(habitacion);
-      },
-      undefined,
-      (error) => {
-        console.error('Error cargando el GLB:', error);
-      }
-    );
-
-    // Marcador rojo opcional
-    const marker = new THREE.Mesh(
-      new THREE.BoxGeometry(0.15, 0.15, 0.15),
-      new THREE.MeshStandardMaterial({ color: 0xff0000 })
-    );
-    marker.position.set(0, 0.9, 0);
-    scene.add(marker);
-
-    let controls = null;
-    let useDeviceOrientation = false;
-
-    async function enableSensors() {
-      try {
-        if (
-          typeof DeviceOrientationEvent !== 'undefined' &&
-          typeof DeviceOrientationEvent.requestPermission === 'function'
-        ) {
-          const permission = await DeviceOrientationEvent.requestPermission();
-          useDeviceOrientation = permission === 'granted';
-        } else {
-          useDeviceOrientation = true;
-        }
-      } catch (err) {
-        console.warn('Permiso de sensores denegado o no disponible:', err);
-        useDeviceOrientation = false;
-      }
-
-      if (useDeviceOrientation) {
-        controls = new DeviceOrientationControls(camera);
-      } else {
-        controls = new OrbitControls(camera, renderer.domElement);
-        controls.enablePan = false;
-        controls.enableZoom = false;
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.08;
-        controls.rotateSpeed = 0.35;
-      }
-
-      overlay.style.display = 'none';
-    }
-
-    startBtn.addEventListener('click', enableSensors);
-
-    // Fallback: si el usuario no toca, igual deja la escena lista.
-    setTimeout(() => {
-      if (overlay.style.display !== 'none') {
-        console.log('Pulsa “Activar VR” para habilitar sensores y estereoscopía.');
-      }
-    }, 1000);
-
-    function onResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      effect.setSize(window.innerWidth, window.innerHeight);
-    }
-    window.addEventListener('resize', onResize);
-
-    function animate() {
-      requestAnimationFrame(animate);
-
-      if (controls) {
-        controls.update();
-      }
-
-      // Recomendado para Cardboard: render estereoscópico side-by-side.
-      effect.render(scene, camera);
-    }
-    animate();
-  </script>
+<script>
+const scene=document.querySelector('a-scene');
+scene.addEventListener('loaded',()=>{
+  if(scene.renderer && scene.renderer.xr){
+    scene.renderer.xr.enabled=false;
+  }
+});
+</script>
 </body>
 </html>
