@@ -1,28 +1,92 @@
-<a-scene background="color:#000">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mi Espacio VR</title>
+
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+<style>
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+}
+</style>
+</head>
+
+<body>
+
+<a-scene
+    renderer="antialias:true"
+    vr-mode-ui="enabled:true"
+    background="color:#000">
 
     <a-assets>
-        <a-asset-item id="room" src="14_6_2026.glb"></a-asset-item>
+        <a-asset-item
+            id="room"
+            src="./14_6_2026.glb">
+        </a-asset-item>
     </a-assets>
 
-    <a-light type="ambient" intensity="2"></a-light>
+    <!-- Luces -->
+    <a-light
+        type="ambient"
+        intensity="2.5">
+    </a-light>
 
+    <a-light
+        type="directional"
+        intensity="2"
+        position="5 10 5">
+    </a-light>
+
+    <!-- Modelo escaneado -->
     <a-entity
+        id="habitacion"
         gltf-model="#room"
         position="0 0 0"
         rotation="0 180 0"
         scale="1 1 1">
     </a-entity>
 
-    <a-entity position="0 0 0">
+    <!-- Cámara estilo sentado -->
+    <a-entity
+        id="rig"
+        position="0 0.9 0">
 
         <a-camera
-            position="0 1.6 0"
-            wasd-controls="acceleration:20">
+            position="0 0 0"
+            wasd-controls="acceleration:20"
+            look-controls="touchEnabled:true">
 
-            <a-cursor></a-cursor>
+            <a-cursor
+                color="#00ffff">
+            </a-cursor>
 
         </a-camera>
 
     </a-entity>
 
+    <!-- Marcador rojo para localizar la silla -->
+    <a-box
+        id="marker"
+        color="red"
+        width="0.15"
+        height="0.15"
+        depth="0.15"
+        position="0 0.9 0">
+    </a-box>
+
 </a-scene>
+
+<script>
+console.log("Mover la posición del rig hasta que el cubo rojo quede sobre la silla.");
+</script>
+
+</body>
+</html>
